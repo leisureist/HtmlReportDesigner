@@ -167,8 +167,8 @@ $.SvgCanvas = function (container, config) {
     $.extend(all_properties.text, {
         fill: '#000000',
         stroke_width: 0,
-        font_size: 24,
-        font_family: 'serif'
+        font_size: 16,
+        font_family: '微軟正黑體'
     });
 
     // Current shape style properties
@@ -1073,8 +1073,31 @@ $.SvgCanvas = function (container, config) {
 
             // if it's not already there, add it
             if (selectedElements.indexOf(elem) == -1) {
+                //selectedElements[j] = elem;
+                //var appendElem;
+                //if (elem.tagName == "rect") {
+                //    selectedElements[j] = elem;
+                //    //var textid = 'text_' + elem.id.split('_')[1];
+                //    //j++;
+                //    //appendElem = svgedit.utilities.getElem(textid);
+                //}
+                var myElem;
+                if (elem.tagName == "text") {
+                    var svgid = idprefix + elem.id.split('_')[1];
+                    //j++;
+                    myElem = svgedit.utilities.getElem(svgid);
+                    //selectedElements[j] = elem;
+                }
+                else {
+                    myElem = elem;
+                }
+                //else {
+                //    selectedElements[j] = elem;
+                //}
 
-                selectedElements[j] = elem;
+                selectedElements[j] = myElem;
+                // if (elem.tagName != "text")
+                selectorManager.requestSelector(myElem);
 
                 // only the first selectedBBoxes element is ever used in the codebase these days
                 //			if (j == 0) selectedBBoxes[0] = svgedit.utilities.getBBox(elem);
@@ -1368,17 +1391,25 @@ $.SvgCanvas = function (container, config) {
                     current_resize_mode = 'none';
                     if (right_click) { started = false; }
 
+                    var myElem;
+                    if (mouse_target.id.indexOf("rect_") != -1) {
+                        myElem = svgedit.utilities.getElem(idprefix + mouse_target.id.split("_")[1]);
+                    }
+                    else {
+                        myElem = mouse_target;
+                    }
+
                     if (mouse_target != svgroot) {
                         // if this element is not yet selected, clear selection and select it
-                        if (selectedElements.indexOf(mouse_target) == -1) {
+                        if (selectedElements.indexOf(myElem) == -1) {
                             // only clear selection if shift is not pressed (otherwise, add 
                             // element to selection)
                             if (!evt.shiftKey) {
                                 // No need to do the call here as it will be done on addToSelection
                                 clearSelection(true);
                             }
-                            addToSelection([mouse_target]);
-                            justSelected = mouse_target;
+                            addToSelection([myElem]);
+                            justSelected = myElem;
                             pathActions.clear();
                         }
                         // else if it's a path, go into pathedit mode in mouseup
@@ -1534,6 +1565,7 @@ $.SvgCanvas = function (container, config) {
                     started = true;
                     start_x = x;
                     start_y = y;
+                    var nextid = getNextId();
                     addSvgElementFromJson({
                         element: 'rect',
                         curStyles: true,
@@ -1542,10 +1574,36 @@ $.SvgCanvas = function (container, config) {
                             y: y,
                             width: 0,
                             height: 0,
-                            id: getNextId(),
+                            id: nextid,
                             opacity: cur_shape.opacity / 2
                         }
                     });
+                    var textid = 'rect_' + nextid.split('_')[1];
+                    var newText = addSvgElementFromJson({
+                        element: 'text',
+                        curStyles: true,
+                        attr: {
+                            x: x,
+                            y: y,
+                            id: textid,
+                            fill: cur_text.fill,
+                            'stroke-width': cur_text.stroke_width,
+                            'font-size': cur_text.font_size,
+                            'font-family': cur_text.font_family,
+                            'text-anchor': 'middle',
+                            'alignment-baseline': 'middle',
+                            'xml:space': 'preserve',
+                            opacity: cur_shape.opacity
+                        }
+                    });
+
+                    //var textid = 'text_' + nextid.split('_')[1];
+                    //var mytext = document.createElementNS(NS.SVG, 'text');
+                    //var textNode = document.createTextNode('test');
+                    //mytext.appendChild(textNode);
+                    //if (attrs.width != 0)
+                    //    element.parentNode.appendChild(mytext);
+
                     break;
                 case 'line':
                     started = true;
@@ -1704,6 +1762,9 @@ $.SvgCanvas = function (container, config) {
                         }
 
                         if (dx != 0 || dy != 0) {
+                            if (selectedElements[0].tagName == "rect") {
+                                selectedElements[1] = svgedit.utilities.getElem('rect_' + selectedElements[0].id.split('_')[1]);
+                            } else if (selectedElements[0].id.indexOf('rect_') != -1) return;
                             len = selectedElements.length;
                             for (i = 0; i < len; ++i) {
                                 selected = selectedElements[i];
@@ -1760,7 +1821,8 @@ $.SvgCanvas = function (container, config) {
                         var intElem = newList[i];
                         // Found an element that was not selected before, so we should add it.
                         if (selectedElements.indexOf(intElem) == -1) {
-                            elemsToAdd.push(intElem);
+                            if (intElem.id.indexOf('rect_') == -1)
+                                elemsToAdd.push(intElem);
                         }
                         // Found an element that was already selected, so we shouldn't remove it.
                         var foundInd = elemsToRemove.indexOf(intElem);
@@ -1920,12 +1982,6 @@ $.SvgCanvas = function (container, config) {
                     } else {
                         new_x = Math.min(start_x, x);
                         new_y = Math.min(start_y, y);
-                    }
-
-                    if (current_mode == "rect") {
-                        //$(element).textElement
-                        //    .attr('x', (Math.abs(self.rectData[1].x + self.rectData[0].x)) / 2)
-                        //    .attr('y', (Math.abs(self.rectData[1].y + self.rectData[0].y)) / 2)
                     }
 
                     if (curConfig.gridSnapping) {
@@ -2238,22 +2294,33 @@ $.SvgCanvas = function (container, config) {
 
                     if (current_mode == "rect") {
                         //alert(element.x);
-                        var myid = 'text_' + element.id.split('_')[1];
-                        var mytext = document.createElementNS(NS.SVG, 'text');
-                        svgedit.utilities.assignAttributes(mytext, {
-                            id: myid, 
-                            class: 'textField',
-                            x: (Math.abs(attrs.x + attrs.x + attrs.width)) / 2,
-                            y: (Math.abs(attrs.y + attrs.y + attrs.height)) / 2,
-                            'alignment-baseline': 'middle',
-                            'text-anchor': 'middle',
-                        });
 
-                        var textNode = document.createTextNode('test');
-                        mytext.appendChild(textNode);
-                        if(attrs.width!= 0)
-                            element.parentNode.appendChild(mytext);
+                        var myid = 'rect_' + element.id.split('_')[1];
+                        if (attrs.width != 0) {
+                            //var mytext = document.createElementNS(NS.SVG, 'text');
+                            var mytext = svgedit.utilities.getElem(myid);
+                            svgedit.utilities.assignAttributes(mytext, {
+                                //id: myid,
+                                //class: 'textField',
+                                x: (Math.abs(attrs.x + attrs.x + attrs.width)) / 2,
+                                y: (Math.abs(attrs.y + attrs.y + attrs.height)) / 2,
+                                //'alignment-baseline': 'middle',
+                                //'text-anchor': 'middle',
+                                //'font-family': "微軟正黑體",
+                                //'font-size': "16"
+                            });
+
+                            var textNode = document.createTextNode('test');
+                            mytext.appendChild(textNode);
+                            //call('changed', [mytext, textNode])
+                            //if(attrs.width!= 0)
+                            //    element.parentNode.appendChild(mytext);
+                        }
+                        else {
+                            $('#' + myid).remove();
+                        }
                     }
+
                     // Image should be kept regardless of size (use inherit dimensions later)
                     keep = (attrs.width != 0 || attrs.height != 0) || current_mode === 'image';
                     break;
@@ -2415,7 +2482,16 @@ $.SvgCanvas = function (container, config) {
                     }
                     // we create the insert command that is stored on the stack
                     // undo means to call cmd.unapply(), redo means to call cmd.apply()
-                    addCommandToHistory(new svgedit.history.InsertElementCommand(element));
+
+
+                    var batchCmd = new svgedit.history.BatchCommand('Multi Elements');
+                    batchCmd.addSubCommand(new svgedit.history.InsertElementCommand(element));
+                    if (element.tagName == "rect") {
+                        var myid = 'rect_' + element.id.split('_')[1];
+                        var mytext = svgedit.utilities.getElem(myid);
+                        batchCmd.addSubCommand(new svgedit.history.InsertElementCommand(mytext));
+                    }
+                    addCommandToHistory(batchCmd);
 
                     call('changed', [element]);
                 }, ani_dur * 1000);

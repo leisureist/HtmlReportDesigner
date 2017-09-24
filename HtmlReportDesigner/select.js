@@ -446,7 +446,9 @@ svgedit.select.SelectorManager.prototype.releaseSelector = function(elem) {
 	if (elem == null) {return;}
 	var i,
 		N = this.selectors.length,
-		sel = this.selectorMap[elem.id];
+        sel = this.selectorMap[elem.id];
+    if (sel == null)
+        return;
 	if (!sel.locked) {
 		// TODO(codedread): Ensure this exists in this module.
 		console.log('WARNING! selector was released but was already unlocked');
