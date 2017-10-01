@@ -1034,8 +1034,11 @@ $.SvgCanvas = function (container, config) {
                 selectorManager.releaseSelector(elem);
                 selectedElements[i] = null;
             }
+            selectedElements = [];
             //		selectedBBoxes[0] = null;
         }
+        else
+            selectedElements = [];
         if (!noCall) { call('selected', selectedElements); }
     };
 
@@ -1073,31 +1076,22 @@ $.SvgCanvas = function (container, config) {
 
             // if it's not already there, add it
             if (selectedElements.indexOf(elem) == -1) {
-                //selectedElements[j] = elem;
-                //var appendElem;
-                //if (elem.tagName == "rect") {
-                //    selectedElements[j] = elem;
-                //    //var textid = 'text_' + elem.id.split('_')[1];
+                selectedElements[j] = elem;
+                
+                //var myElem;
+                //if (elem.tagName == "text") {
+                //    var svgid = idprefix + elem.id.split('_')[1];
                 //    //j++;
-                //    //appendElem = svgedit.utilities.getElem(textid);
+                //    myElem = svgedit.utilities.getElem(svgid);
+                //    //selectedElements[j] = elem;
                 //}
-                var myElem;
-                if (elem.tagName == "text") {
-                    var svgid = idprefix + elem.id.split('_')[1];
-                    //j++;
-                    myElem = svgedit.utilities.getElem(svgid);
-                    //selectedElements[j] = elem;
-                }
-                else {
-                    myElem = elem;
-                }
                 //else {
-                //    selectedElements[j] = elem;
+                //    myElem = elem;
                 //}
-
-                selectedElements[j] = myElem;
-                // if (elem.tagName != "text")
-                selectorManager.requestSelector(myElem);
+                
+                //selectedElements[j] = myElem;
+               
+                selectorManager.requestSelector(elem);
 
                 // only the first selectedBBoxes element is ever used in the codebase these days
                 //			if (j == 0) selectedBBoxes[0] = svgedit.utilities.getBBox(elem);
@@ -1398,8 +1392,9 @@ $.SvgCanvas = function (container, config) {
                     else {
                         myElem = mouse_target;
                     }
-
+                    
                     if (mouse_target != svgroot) {
+                        
                         // if this element is not yet selected, clear selection and select it
                         if (selectedElements.indexOf(myElem) == -1) {
                             // only clear selection if shift is not pressed (otherwise, add 
@@ -1743,6 +1738,7 @@ $.SvgCanvas = function (container, config) {
             var tlist;
             switch (current_mode) {
                 case 'select':
+                 
                     // we temporarily use a translate on the element(s) being dragged
                     // this transform is removed upon mousing up and the element is 
                     // relocated to the new location
@@ -1762,11 +1758,31 @@ $.SvgCanvas = function (container, config) {
                         }
 
                         if (dx != 0 || dy != 0) {
-                            if (selectedElements[0].tagName == "rect") {
-                                selectedElements[1] = svgedit.utilities.getElem('rect_' + selectedElements[0].id.split('_')[1]);
-                            } else if (selectedElements[0].id.indexOf('rect_') != -1) return;
+
+                            if (selectedElements.length == 1) {
+                                if (selectedElements[0].tagName == "rect") {
+                                    selectedElements[1] = svgedit.utilities.getElem('rect_' + selectedElements[0].id.split('_')[1]);
+                                } else if (selectedElements[0].id.indexOf('rect_') != -1) return;
+                            }
+                            else {
+                                var j = selectedElements.length;
+                                var seq = 0;
+                                for (i = 0; i < selectedElements.length; i++) {
+                                   
+                                    if (selectedElements[i].id.indexOf(idprefix) != -1) {
+                                        seq = selectedElements[i].id.split('_')[1];
+                                        if (selectedElements.indexOf("rect_" + seq) == -1) {
+                                            selectedElements[j] = svgedit.utilities.getElem('rect_' + seq);
+                                            j++;
+                                        }
+                                    }
+                                }
+                            }
+
                             len = selectedElements.length;
+
                             for (i = 0; i < len; ++i) {
+
                                 selected = selectedElements[i];
                                 if (selected == null) { break; }
                                 //							if (i==0) {
@@ -1799,6 +1815,7 @@ $.SvgCanvas = function (container, config) {
                     }
                     break;
                 case 'multiselect':
+                  
                     real_x *= current_zoom;
                     real_y *= current_zoom;
                     svgedit.utilities.assignAttributes(rubberBox, {
@@ -1815,14 +1832,17 @@ $.SvgCanvas = function (container, config) {
                     var elemsToRemove = selectedElements.slice(), elemsToAdd = [],
                         newList = getIntersectionList();
 
+                   
                     // For every element in the intersection, add if not present in selectedElements.
                     len = newList.length;
                     for (i = 0; i < len; ++i) {
                         var intElem = newList[i];
                         // Found an element that was not selected before, so we should add it.
                         if (selectedElements.indexOf(intElem) == -1) {
-                            if (intElem.id.indexOf('rect_') == -1)
+                            //if (intElem.id.indexOf('rect_') == -1) {
                                 elemsToAdd.push(intElem);
+
+                           // }
                         }
                         // Found an element that was already selected, so we shouldn't remove it.
                         var foundInd = elemsToRemove.indexOf(intElem);
@@ -6989,6 +7009,21 @@ $.SvgCanvas = function (container, config) {
     this.deleteSelectedElements = function () {
         var i;
         var batchCmd = new svgedit.history.BatchCommand('Delete Elements');
+        var seq = 0;
+        var k = selectedElements.length;
+        for (var j = 0; j < selectedElements.length; j++) {
+            if (selectedElements[j] == null)
+                continue;
+            
+            if (selectedElements[j].tagName == "rect") {
+                seq = selectedElements[j].id.split('_')[1];
+                if (selectedElements.indexOf('rect_' + seq) == -1) {
+                    selectedElements[k] = svgedit.utilities.getElem('rect_' + seq);
+                    k++;
+                }
+            }
+        }
+
         var len = selectedElements.length;
         var selectedCopy = []; //selectedElements is being deleted
         for (i = 0; i < len; ++i) {
@@ -7004,14 +7039,17 @@ $.SvgCanvas = function (container, config) {
             // Remove the path if present.
             svgedit.path.removePath_(t.id);
 
-            // Get the parent if it's a single-child anchor
-            if (parent.tagName === 'a' && parent.childNodes.length === 1) {
-                t = parent;
-                parent = parent.parentNode;
+            if (parent != null) {
+                // Get the parent if it's a single-child anchor
+                if (parent.tagName === 'a' && parent.childNodes.length === 1) {
+                    t = parent;
+                    parent = parent.parentNode;
+                }
+
+                var elem = parent.removeChild(t);
             }
 
-            var nextSibling = t.nextSibling;
-            var elem = parent.removeChild(t);
+            var nextSibling = t.nextSibling;            
             selectedCopy.push(selected); //for the copy
             selectedElements[i] = null;
             batchCmd.addSubCommand(new RemoveElementCommand(elem, nextSibling, parent));
