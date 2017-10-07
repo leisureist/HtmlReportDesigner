@@ -96,11 +96,11 @@ rptEditor.addExtension('view_grid', function() { 'use strict';
 		hcanvas.height = big_int;
 		var ctx = hcanvas.getContext('2d');
 		var cur_d = 0.5;
-		var part = big_int / 10;
+		var part = big_int / 20;
 
 		ctx.globalAlpha = 0.2;
 		ctx.strokeStyle = rptEditor.curConfig.gridColor;
-		for (i = 1; i < 10; i++) {
+		for (i = 1; i < 20; i++) {
 			var sub_d = Math.round(part * i) + 0.5;
 			// var line_num = (i % 2)?12:10;
 			var line_num = 0;

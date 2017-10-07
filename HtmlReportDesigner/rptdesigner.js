@@ -99,11 +99,11 @@ TODOS
 				canvasName: 'default',
 				canvas_expansion: 3,
 				initFill: {
-					color: 'FF0000', // solid red
-					opacity: 1
+                    color: 'b8cff2', // solid red
+					opacity: 0.5
 				},
 				initStroke: {
-					width: 5,
+					width: 1,
 					color: '000000', // solid black
 					opacity: 1
 				},
@@ -123,13 +123,13 @@ TODOS
 				// DOCUMENT PROPERTIES
 				// Change the following to a preference (already in the Document Properties dialog)?
 				//dimensions: [640, 480],
-                dimensions: [595, 842],
+                dimensions: [600, 850],
 				// EDITOR OPTIONS
 				// Change the following to preferences (already in the Editor Options dialog)?
-				gridSnapping: false,
-				gridColor: '#000',
+				gridSnapping: true,
+                gridColor: '#b9b9b9',
 				baseUnit: 'px',
-				snappingStep: 10,
+				snappingStep: 5,
 				showRulers: true,
 				// URL BEHAVIOR CONFIGURATION
 				preventAllURLConfig: false,
@@ -138,7 +138,7 @@ TODOS
 				lockExtensions: false, // Disallowed in URL setting
 				noDefaultExtensions: false, // noDefaultExtensions can only be meaningfully used in config.js or in the URL
 				// EXTENSION-RELATED (GRID)
-				showGrid: false, // Set by ext-grid.js
+				showGrid: true, // Set by ext-grid.js
 				// EXTENSION-RELATED (STORAGE)
 				noStorageOnLoad: false, // Some interaction with ext-storage.js; prevent even the loading of previously saved local storage
 				forceStorage: false, // Some interaction with ext-storage.js; strongly discouraged from modification as it bypasses user privacy by preventing them from choosing whether to keep local storage or not

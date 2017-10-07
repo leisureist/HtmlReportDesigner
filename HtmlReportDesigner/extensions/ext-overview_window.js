@@ -59,8 +59,8 @@ rptEditor.addExtension("overview_window", function() {	'use strict';
 	var updateViewDimensions= function(){
 		var viewWidth=$("#svgroot").attr("width");
 		var viewHeight=$("#svgroot").attr("height");
-        var viewX = 595;//640;
-        var viewY = 842;//480;
+        var viewX = 600;//595;//640;
+        var viewY = 850;//842;//480;
 		
 		if(svgedit.browser.isIE())
 		{

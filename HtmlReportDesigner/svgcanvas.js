@@ -57,7 +57,7 @@ $.SvgCanvas = function (container, config) {
         show_outside_canvas: true,
         selectNew: true,
         //dimensions: [640, 480]
-        dimensions: [595, 842]
+        dimensions: [600, 850]
     };
 
     // Update config with new one if given
@@ -168,6 +168,7 @@ $.SvgCanvas = function (container, config) {
         fill: '#000000',
         stroke_width: 0,
         font_size: 16,
+        font_weight: 'bold',
         font_family: '微軟正黑體'
     });
 
@@ -989,13 +990,24 @@ $.SvgCanvas = function (container, config) {
     var recalculateAllSelectedDimensions = this.recalculateAllSelectedDimensions = function () {
         var text = (current_resize_mode == 'none' ? 'position' : 'size');
         var batchCmd = new svgedit.history.BatchCommand(text);
-
+        
         var i = selectedElements.length;
         while (i--) {
             var elem = selectedElements[i];
+
             //			if (svgedit.utilities.getRotationAngle(elem) && !svgedit.math.hasMatrixTransform(getTransformList(elem))) {continue;}
             var cmd = svgedit.recalculate.recalculateDimensions(elem);
             if (cmd) {
+                if (elem.tagName == "rect" && text == "size") {
+                    var myelem = svgedit.utilities.getElem("rect_" + elem.id.split("_")[1]);
+                    var attrs = ['width', 'height', 'x', 'y'];
+                    var initial = $.extend(true, {}, $(myelem).attr(attrs));
+                    $.each(initial, function (attr, val) {
+                        initial[attr] = svgedit.units.convertToNum(attr, val);
+                    });
+                    batchCmd.addSubCommand(new svgedit.history.ChangeElementCommand(myelem, initial));
+                }
+
                 batchCmd.addSubCommand(cmd);
             }
         }
@@ -1588,7 +1600,9 @@ $.SvgCanvas = function (container, config) {
                             'text-anchor': 'middle',
                             'alignment-baseline': 'middle',
                             'xml:space': 'preserve',
-                            opacity: cur_shape.opacity
+                            'font-weight': cur_text.font_weight,
+                            'fill-opacity': 1,
+                            'opacity': 1//cur_shape.opacity
                         }
                     });
 
@@ -1666,9 +1680,10 @@ $.SvgCanvas = function (container, config) {
                             'stroke-width': cur_text.stroke_width,
                             'font-size': cur_text.font_size,
                             'font-family': cur_text.font_family,
+                            'fill-opacity': 1,
                             'text-anchor': 'middle',
-                            'xml:space': 'preserve',
-                            opacity: cur_shape.opacity
+                            'xml:space': 'preserve'
+                            //opacity: cur_shape.opacity
                         }
                     });
                     //					newText.textContent = 'text';
@@ -2228,6 +2243,7 @@ $.SvgCanvas = function (container, config) {
                             // This shouldn't be necessary as it was done on mouseDown...
                             //							call('selected', [selected]);
                         }
+                        
                         // always recalculate dimensions to strip off stray identity transforms
                         recalculateAllSelectedDimensions();
                         // if it was being dragged/resized
@@ -2254,7 +2270,27 @@ $.SvgCanvas = function (container, config) {
                                 }
                             }
                         } // no change in mouse position
+                        // rect resize, then text move to center 
+                        if (selectedElements[0] != null) {
+                            var selected = selectedElements[0];
+                            if (selected.tagName == "rect") {
 
+                                var width = parseInt(selected.getAttribute('width')),
+                                    height = parseInt(selected.getAttribute('height')),
+                                    x = parseInt(selected.getAttribute('x')),
+                                    y = parseInt(selected.getAttribute('y'));
+
+                                var myid = 'rect_' + selected.id.split('_')[1];
+                                if (width != 0) {
+
+                                    var mytext = svgedit.utilities.getElem(myid);
+                                    svgedit.utilities.assignAttributes(mytext, {
+                                        x: (Math.abs(x + (width / 2))),
+                                        y: (Math.abs(y + (height / 2)))
+                                    });
+                                }
+                            }
+                        }
                         // Remove non-scaling stroke
                         if (svgedit.browser.supportsNonScalingStroke()) {
                             var elem = selectedElements[0];
@@ -2323,7 +2359,7 @@ $.SvgCanvas = function (container, config) {
                                 //id: myid,
                                 //class: 'textField',
                                 x: (Math.abs(attrs.x + attrs.x + attrs.width)) / 2,
-                                y: (Math.abs(attrs.y + attrs.y + attrs.height)) / 2,
+                                y: (Math.abs(attrs.y + attrs.y + attrs.height)) / 2
                                 //'alignment-baseline': 'middle',
                                 //'text-anchor': 'middle',
                                 //'font-family': "微軟正黑體",
@@ -2340,7 +2376,7 @@ $.SvgCanvas = function (container, config) {
                             $('#' + myid).remove();
                         }
                     }
-
+                    
                     // Image should be kept regardless of size (use inherit dimensions later)
                     keep = (attrs.width != 0 || attrs.height != 0) || current_mode === 'image';
                     break;
