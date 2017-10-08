@@ -41,6 +41,8 @@
     <script src="select.js"></script>
     <script src="draw.js"></script>
     <script src="path.js"></script>
+    <script src="d3/d3.min.js"></script>
+    <script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
     <script src="svgcanvas.js"></script>
     <script src="rptdesigner.js"></script>
     <script src="locale/locale.js"></script>
@@ -371,19 +373,14 @@
         <div id="tools_left" class="tools_panel">
             <div class="tool_button" id="tool_select" title="Select Tool"></div>
             <div class="tool_button" id="tool_line" title="Line Tool"></div>
-            <div class="tool_button flyout_current" id="tools_rect_show" title="Square/Rect Tool">
-                <div class="flyout_arrow_horiz"></div>
-            </div>
+            <div class="tool_button" id="tool_rect" title="Rectangle"></div>
+            <div class="tool_button" id="tool_square" title="Square"></div>
 
             <div class="tool_button" id="tool_text" title="Text Tool"></div>
             <div class="tool_button" id="tool_image" title="Image Tool"></div>
-            <div class="tool_button" id="tool_zoom" title="Zoom Tool [Ctrl+Up/Down]"></div>
+            
 
-            <div style="display: none">
-                <div id="tool_rect" title="Rectangle"></div>
-                <div id="tool_square" title="Square"></div>
-
-            </div>
+           
         </div> <!-- tools_left -->
         <div id="tools_bottom" class="tools_panel">
             <!-- Zoom buttons -->
@@ -395,14 +392,12 @@
                 <div id="zoom_dropdown" class="dropdown">
                     <button></button>
                     <ul>
-                        <li>1000%</li>
                         <li>400%</li>
                         <li>300%</li>
                         <li>200%</li>
                         <li>150%</li>
                         <li>100%</li>
-                        <li>50%</li>
-                        <li>25%</li>
+                        <li>80%</li>
                         <li id="fit_to_canvas" data-val="canvas">Fit to canvas</li>
                         <li id="fit_to_sel" data-val="selection">Fit to selection</li>
                         <li id="fit_to_layer_content" data-val="layer">Fit to layer content</li>

@@ -57,7 +57,7 @@ $.SvgCanvas = function (container, config) {
         show_outside_canvas: true,
         selectNew: true,
         //dimensions: [640, 480]
-        dimensions: [600, 850]
+        dimensions: [900, 1275]
     };
 
     // Update config with new one if given

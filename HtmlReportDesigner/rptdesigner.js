@@ -88,7 +88,6 @@ TODOS
 			},
 			defaultExtensions = [
 				'ext-overview_window.js',
-				'ext-markers.js',
 				//'ext-connector.js',
 				'ext-imagelib.js',
 				'ext-grid.js',
@@ -97,7 +96,7 @@ TODOS
 				// Todo: svgcanvas.js also sets and checks: show_outside_canvas, selectNew; add here?
 				// Change the following to preferences and add pref controls to the UI (e.g., initTool, wireframe, showlayers)?
 				canvasName: 'default',
-				canvas_expansion: 3,
+				canvas_expansion: 1,
 				initFill: {
                     color: 'b8cff2', // solid red
 					opacity: 0.5
@@ -112,7 +111,7 @@ TODOS
 				initTool: 'select',
 				exportWindowType: 'new', // 'same' (todo: also support 'download')
 				wireframe: false,
-				showlayers: false,
+				showlayers: true,
 				no_save_warning: false,
 				// PATH CONFIGURATION
 				// The following path configuration items are disallowed in the URL (as should any future path configurations)
@@ -490,7 +489,9 @@ TODOS
 
 					editor.setConfig(urldata, {overwrite: false}); // Note: source and url (as with storagePrompt later) are not set on config but are used below
 					
-					setupCurConfig();
+                    setupCurConfig();
+
+               
 
 					if (!curConfig.preventURLContentLoading) {
 						src = urldata.source;
@@ -653,7 +654,7 @@ TODOS
 					'#tool_select': 'select',
 					
 					'#tool_line': 'pen',
-					'#tool_rect,#tools_rect_show': 'rect',
+                    '#tool_rect': 'rect',
 					'#tool_square': 'square',
 					
 					
@@ -662,7 +663,7 @@ TODOS
 					
 					'#tool_text,#layer_rename': 'text',
 					'#tool_image': 'image',
-					'#tool_zoom': 'zoom',
+					
 
 					'#tool_clone,#tool_clone_multi': 'clone',
 					'#tool_node_clone': 'node_clone',
@@ -3347,13 +3348,6 @@ TODOS
 				}
 			};
 
-			var clickZoom = function() {
-				if (toolButtonClick('#tool_zoom')) {
-					svgCanvas.setMode('zoom');
-					workarea.css('cursor', zoomInIcon);
-				}
-			};
-
 			var zoomImage = function(multiplier) {
 				var res = svgCanvas.getResolution();
 				multiplier = multiplier ? res.zoom * multiplier : 1;
@@ -3364,13 +3358,7 @@ TODOS
 				updateCanvas(true);
 			};
 
-			var dblclickZoom = function() {
-				if (toolButtonClick('#tool_zoom')) {
-					zoomImage();
-					setSelectMode();
-				}
-			};
-
+			
 			var clickText = function() {
 				if (toolButtonClick('#tool_text')) {
 					svgCanvas.setMode('text');
@@ -4420,7 +4408,7 @@ TODOS
 					
 					{sel: '#tool_text', fn: clickText, evt: 'click', key: ['T', true]},
 					{sel: '#tool_image', fn: clickImage, evt: 'mouseup'},
-					{sel: '#tool_zoom', fn: clickZoom, evt: 'mouseup', key: ['Z', true]},
+					
 					{sel: '#tool_clear', fn: clickClear, evt: 'mouseup', key: ['N', true]},
 					{sel: '#tool_save', fn: function() {
 						if (editingsource) {
@@ -4509,7 +4497,7 @@ TODOS
 
 				// Tooltips not directly associated with a single function
 				var key_assocs = {
-					'4/Shift+4': '#tools_rect_show'
+					
 				};
 
 				return {
@@ -4603,7 +4591,7 @@ TODOS
 							}
 						});
 
-						$('#tool_zoom').dblclick(dblclickZoom);
+					
 					},
 					setTitles: function() {
 						$.each(key_assocs, function(keyval, sel) {

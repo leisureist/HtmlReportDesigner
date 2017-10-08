@@ -258,7 +258,6 @@ var rptEditor = (function($, editor) {'use strict';
 			tool_ungroup: tools.ungroup,
 			tool_wireframe: tools.wireframe_mode,
 			view_grid: tools.toggle_grid,
-			tool_zoom: tools.mode_zoom,
 			url_notice: tools.no_embed
 
 		}, true);
