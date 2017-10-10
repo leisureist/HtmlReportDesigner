@@ -100,6 +100,7 @@ rptEditor.readLang({
 		"mode_line": "線工具",
 		"mode_connect": "Connect two objects",
         "mode_rect": "矩形",
+        "mode_field": "資料欄位",
 		"mode_square": "正方型",
 		"mode_fhrect": "徒手畫矩形",
 		"mode_ellipse": "橢圓",

@@ -77,7 +77,7 @@ rptEditor.addExtension('view_grid', function () {
 
     // grid-line-header
     d3.select("#canvasGrid").append('line').attr('id', 'lineh').attr('x1', 0).attr('y1', 200).attr('x2', 10000).attr('y2', 200)
-        .attr('stroke-width', 5).attr('stroke', '#FFA500').attr('fill-opacity', 1).attr('stroke-opacity', 1)
+        .attr('stroke-width', 4).attr('stroke', '#FFA500').attr('fill-opacity', 1).attr('stroke-opacity', 1)
         .attr('fill', 'none');
 
     d3.select('#lineh')
@@ -102,10 +102,10 @@ rptEditor.addExtension('view_grid', function () {
     assignAttributes(gridLineFoot, {
         'id': 'linef',
         'x1': 0,
-        'y1': 800,
+        'y1': 750,
         'x2': 10000,
-        'y2': 800,
-        'stroke-width': 5,
+        'y2': 750,
+        'stroke-width': 4,
         'stroke': '#FFA500',
         'fill-opacity': 1,
         'stroke-opacity': 1,
@@ -167,7 +167,6 @@ rptEditor.addExtension('view_grid', function () {
         ctx.lineTo(0, cur_d);
         ctx.stroke();
 
-        console.log(zoom);
         var lineh = d3.select('#lineh');
         var linef = d3.select('#linef');
         var y1h = parseInt(lineh.attr("y1")) / orgZoom;

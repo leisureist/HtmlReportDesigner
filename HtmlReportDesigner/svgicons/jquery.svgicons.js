@@ -325,7 +325,7 @@ $(function() {
 							.attr({'class':'svg_icon', src:str});
 					} else {
 						icon = fixIDs($(svgroot), i);
-					}
+                    }
 					addIcon(icon, id);
 				}
 

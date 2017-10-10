@@ -246,7 +246,8 @@ var rptEditor = (function($, editor) {'use strict';
 			tool_openclose_path: tools.openclose_path,
 			
 			tool_position: tools.align_to_page,
-			tool_rect: tools.mode_rect,
+            tool_rect: tools.mode_rect,
+            tool_field: tools.mode_field,
 			tool_redo: tools.redo,
 			tool_reorient: tools.reorient_path,
 			tool_select: tools.mode_select,
