@@ -990,7 +990,7 @@ $.SvgCanvas = function (container, config) {
     var recalculateAllSelectedDimensions = this.recalculateAllSelectedDimensions = function () {
         var text = (current_resize_mode == 'none' ? 'position' : 'size');
         var batchCmd = new svgedit.history.BatchCommand(text);
-        
+
         var i = selectedElements.length;
         while (i--) {
             var elem = selectedElements[i];
@@ -998,8 +998,8 @@ $.SvgCanvas = function (container, config) {
             //			if (svgedit.utilities.getRotationAngle(elem) && !svgedit.math.hasMatrixTransform(getTransformList(elem))) {continue;}
             var cmd = svgedit.recalculate.recalculateDimensions(elem);
             if (cmd) {
-                if (elem.tagName == "rect" && text == "size") {
-                    var myelem = svgedit.utilities.getElem("rect_" + elem.id.split("_")[1]);
+                if (elem.id.indexOf('fd_') != -1 && text == "size") {
+                    var myelem = svgedit.utilities.getElem("fdtxt_" + elem.id.split("_")[1]);
                     var attrs = ['width', 'height', 'x', 'y'];
                     var initial = $.extend(true, {}, $(myelem).attr(attrs));
                     $.each(initial, function (attr, val) {
@@ -1089,7 +1089,7 @@ $.SvgCanvas = function (container, config) {
             // if it's not already there, add it
             if (selectedElements.indexOf(elem) == -1) {
                 selectedElements[j] = elem;
-                
+
                 //var myElem;
                 //if (elem.tagName == "text") {
                 //    var svgid = idprefix + elem.id.split('_')[1];
@@ -1100,9 +1100,9 @@ $.SvgCanvas = function (container, config) {
                 //else {
                 //    myElem = elem;
                 //}
-                
+
                 //selectedElements[j] = myElem;
-               
+
                 selectorManager.requestSelector(elem);
 
                 // only the first selectedBBoxes element is ever used in the codebase these days
@@ -1398,15 +1398,15 @@ $.SvgCanvas = function (container, config) {
                     if (right_click) { started = false; }
 
                     var myElem;
-                    if (mouse_target.id.indexOf("rect_") != -1) {
-                        myElem = svgedit.utilities.getElem(idprefix + mouse_target.id.split("_")[1]);
+                    if (mouse_target.id.indexOf("fdtxt_") != -1) {
+                        myElem = svgedit.utilities.getElem('fd_' + mouse_target.id.split("_")[1]);
                     }
                     else {
                         myElem = mouse_target;
                     }
-                    
+
                     if (mouse_target != svgroot) {
-                        
+
                         // if this element is not yet selected, clear selection and select it
                         if (selectedElements.indexOf(myElem) == -1) {
                             // only clear selection if shift is not pressed (otherwise, add 
@@ -1585,7 +1585,26 @@ $.SvgCanvas = function (container, config) {
                             opacity: cur_shape.opacity / 2
                         }
                     });
-                    var textid = 'rect_' + nextid.split('_')[1];
+                    break;
+                case 'field':
+                    started = true;
+                    start_x = x;
+                    start_y = y;
+                    var nextid = getNextId();
+                    var myid = 'fd_' + nextid.split('_')[1]
+                    addSvgElementFromJson({
+                        element: 'rect',
+                        curStyles: true,
+                        attr: {
+                            x: x,
+                            y: y,
+                            width: 0,
+                            height: 0,
+                            id: myid,
+                            opacity: cur_shape.opacity / 2
+                        }
+                    });
+                    var textid = 'fdtxt_' + nextid.split('_')[1];
                     var newText = addSvgElementFromJson({
                         element: 'text',
                         curStyles: true,
@@ -1605,14 +1624,6 @@ $.SvgCanvas = function (container, config) {
                             'opacity': 1//cur_shape.opacity
                         }
                     });
-
-                    //var textid = 'text_' + nextid.split('_')[1];
-                    //var mytext = document.createElementNS(NS.SVG, 'text');
-                    //var textNode = document.createTextNode('test');
-                    //mytext.appendChild(textNode);
-                    //if (attrs.width != 0)
-                    //    element.parentNode.appendChild(mytext);
-
                     break;
                 case 'line':
                     started = true;
@@ -1753,7 +1764,7 @@ $.SvgCanvas = function (container, config) {
             var tlist;
             switch (current_mode) {
                 case 'select':
-                 
+
                     // we temporarily use a translate on the element(s) being dragged
                     // this transform is removed upon mousing up and the element is 
                     // relocated to the new location
@@ -1775,19 +1786,19 @@ $.SvgCanvas = function (container, config) {
                         if (dx != 0 || dy != 0) {
 
                             if (selectedElements.length == 1) {
-                                if (selectedElements[0].tagName == "rect") {
-                                    selectedElements[1] = svgedit.utilities.getElem('rect_' + selectedElements[0].id.split('_')[1]);
-                                } else if (selectedElements[0].id.indexOf('rect_') != -1) return;
+                                if (selectedElements[0].id.indexOf('fd_') != -1) {
+                                    selectedElements[1] = svgedit.utilities.getElem('fdtxt_' + selectedElements[0].id.split('_')[1]);
+                                } else if (selectedElements[0].id.indexOf('fdtxt_') != -1) return;
                             }
                             else {
                                 var j = selectedElements.length;
                                 var seq = 0;
                                 for (i = 0; i < selectedElements.length; i++) {
-                                   
-                                    if (selectedElements[i].id.indexOf(idprefix) != -1) {
+
+                                    if (selectedElements[i].id.indexOf('fd_') != -1) {
                                         seq = selectedElements[i].id.split('_')[1];
-                                        if (selectedElements.indexOf("rect_" + seq) == -1) {
-                                            selectedElements[j] = svgedit.utilities.getElem('rect_' + seq);
+                                        if (selectedElements.indexOf("fdtxt_" + seq) == -1) {
+                                            selectedElements[j] = svgedit.utilities.getElem('fdtxt_' + seq);
                                             j++;
                                         }
                                     }
@@ -1830,7 +1841,7 @@ $.SvgCanvas = function (container, config) {
                     }
                     break;
                 case 'multiselect':
-                  
+
                     real_x *= current_zoom;
                     real_y *= current_zoom;
                     svgedit.utilities.assignAttributes(rubberBox, {
@@ -1847,17 +1858,17 @@ $.SvgCanvas = function (container, config) {
                     var elemsToRemove = selectedElements.slice(), elemsToAdd = [],
                         newList = getIntersectionList();
 
-                   
+
                     // For every element in the intersection, add if not present in selectedElements.
                     len = newList.length;
                     for (i = 0; i < len; ++i) {
                         var intElem = newList[i];
                         // Found an element that was not selected before, so we should add it.
                         if (selectedElements.indexOf(intElem) == -1) {
-                            //if (intElem.id.indexOf('rect_') == -1) {
-                                elemsToAdd.push(intElem);
+                            
+                            elemsToAdd.push(intElem);
 
-                           // }
+                         
                         }
                         // Found an element that was already selected, so we shouldn't remove it.
                         var foundInd = elemsToRemove.indexOf(intElem);
@@ -2005,6 +2016,9 @@ $.SvgCanvas = function (container, config) {
                 // fall through
                 case 'rect':
                 // fall through
+                case 'field':
+                    if (current_mode == "field")
+                        shape = svgedit.utilities.getElem('fd_' + getId().split('_')[1]);
                 case 'image':
                     var square = (current_mode == 'square') || evt.shiftKey,
                         w = Math.abs(x - start_x),
@@ -2243,7 +2257,7 @@ $.SvgCanvas = function (container, config) {
                             // This shouldn't be necessary as it was done on mouseDown...
                             //							call('selected', [selected]);
                         }
-                        
+
                         // always recalculate dimensions to strip off stray identity transforms
                         recalculateAllSelectedDimensions();
                         // if it was being dragged/resized
@@ -2273,14 +2287,14 @@ $.SvgCanvas = function (container, config) {
                         // rect resize, then text move to center 
                         if (selectedElements[0] != null) {
                             var selected = selectedElements[0];
-                            if (selected.tagName == "rect") {
+                            if (selected.id.indexOf('fd_') != -1) {
 
                                 var width = parseInt(selected.getAttribute('width')),
                                     height = parseInt(selected.getAttribute('height')),
                                     x = parseInt(selected.getAttribute('x')),
                                     y = parseInt(selected.getAttribute('y'));
 
-                                var myid = 'rect_' + selected.id.split('_')[1];
+                                var myid = 'fdtxt_' + selected.id.split('_')[1];
                                 if (width != 0) {
 
                                     var mytext = svgedit.utilities.getElem(myid);
@@ -2347,38 +2361,36 @@ $.SvgCanvas = function (container, config) {
                 case 'rect':
                 case 'image':
                     attrs = $(element).attr(['width', 'height', 'x', 'y']);
-
-                    if (current_mode == "rect") {
-                        //alert(element.x);
-
-                        var myid = 'rect_' + element.id.split('_')[1];
-                        if (attrs.width != 0) {
-                            //var mytext = document.createElementNS(NS.SVG, 'text');
-                            var mytext = svgedit.utilities.getElem(myid);
-                            svgedit.utilities.assignAttributes(mytext, {
-                                //id: myid,
-                                //class: 'textField',
-                                x: (Math.abs(attrs.x + attrs.x + attrs.width)) / 2,
-                                y: (Math.abs(attrs.y + attrs.y + attrs.height)) / 2
-                                //'alignment-baseline': 'middle',
-                                //'text-anchor': 'middle',
-                                //'font-family': "微軟正黑體",
-                                //'font-size': "16"
-                            });
-
-                            var textNode = document.createTextNode('test');
-                            mytext.appendChild(textNode);
-                            //call('changed', [mytext, textNode])
-                            //if(attrs.width!= 0)
-                            //    element.parentNode.appendChild(mytext);
-                        }
-                        else {
-                            $('#' + myid).remove();
-                        }
-                    }
-                    
                     // Image should be kept regardless of size (use inherit dimensions later)
                     keep = (attrs.width != 0 || attrs.height != 0) || current_mode === 'image';
+                    break;
+                case 'field':
+                    element = svgedit.utilities.getElem('fd_' + getId().split('_')[1]),
+                    attrs = $(element).attr(['width', 'height', 'x', 'y']);
+                    var mytxtid = 'fdtxt_' + element.id.split('_')[1];
+                    if (attrs.width != 0) {
+                        //var mytext = document.createElementNS(NS.SVG, 'text');
+                        var mytext = svgedit.utilities.getElem(mytxtid);
+                        svgedit.utilities.assignAttributes(mytext, {
+                            //id: myid,
+                            //class: 'textField',
+                            x: (Math.abs(attrs.x + attrs.x + attrs.width)) / 2,
+                            y: (Math.abs(attrs.y + attrs.y + attrs.height)) / 2
+                            //'alignment-baseline': 'middle',
+                            //'text-anchor': 'middle',
+                            //'font-family': "微軟正黑體",
+                            //'font-size': "16"
+                        });
+
+                        var textNode = document.createTextNode('test');
+                        mytext.appendChild(textNode);
+
+                        keep = (attrs.width != 0 || attrs.height != 0);
+                    }
+                    else {
+                        $('#' + myid).remove();
+                    }
+
                     break;
                 case 'circle':
                     keep = (element.getAttribute('r') != 0);
@@ -2480,7 +2492,11 @@ $.SvgCanvas = function (container, config) {
             });
 
             if (!keep && element != null) {
-                getCurrentDrawing().releaseId(getId());
+                var mygetid = getId();
+                if (current_mode == 'field')
+                    mygetid = 'fd_' + mygetid.split('_')[1];
+
+                getCurrentDrawing().releaseId(mygetid);
                 element.parentNode.removeChild(element);
                 element = null;
 
@@ -2542,8 +2558,8 @@ $.SvgCanvas = function (container, config) {
 
                     var batchCmd = new svgedit.history.BatchCommand('Multi Elements');
                     batchCmd.addSubCommand(new svgedit.history.InsertElementCommand(element));
-                    if (element.tagName == "rect") {
-                        var myid = 'rect_' + element.id.split('_')[1];
+                    if (element.id.indexOf('fd_') != -1) {
+                        var myid = 'fdtxt_' + element.id.split('_')[1];
                         var mytext = svgedit.utilities.getElem(myid);
                         batchCmd.addSubCommand(new svgedit.history.InsertElementCommand(mytext));
                     }
@@ -7050,11 +7066,11 @@ $.SvgCanvas = function (container, config) {
         for (var j = 0; j < selectedElements.length; j++) {
             if (selectedElements[j] == null)
                 continue;
-            
-            if (selectedElements[j].tagName == "rect") {
+
+            if (selectedElements[j].id.indexOf('fd_') != -1) {
                 seq = selectedElements[j].id.split('_')[1];
-                if (selectedElements.indexOf('rect_' + seq) == -1) {
-                    selectedElements[k] = svgedit.utilities.getElem('rect_' + seq);
+                if (selectedElements.indexOf('fdtxt_' + seq) == -1) {
+                    selectedElements[k] = svgedit.utilities.getElem('fdtxt_' + seq);
                     k++;
                 }
             }
@@ -7085,7 +7101,7 @@ $.SvgCanvas = function (container, config) {
                 var elem = parent.removeChild(t);
             }
 
-            var nextSibling = t.nextSibling;            
+            var nextSibling = t.nextSibling;
             selectedCopy.push(selected); //for the copy
             selectedElements[i] = null;
             batchCmd.addSubCommand(new RemoveElementCommand(elem, nextSibling, parent));
