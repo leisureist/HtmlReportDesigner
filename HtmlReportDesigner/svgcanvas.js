@@ -167,7 +167,7 @@ $.SvgCanvas = function (container, config) {
     $.extend(all_properties.text, {
         fill: '#000000',
         stroke_width: 0,
-        font_size: 16,
+        font_size: 8,
         font_weight: 'bold',
         font_family: '微軟正黑體'
     });
@@ -1103,7 +1103,7 @@ $.SvgCanvas = function (container, config) {
 
                 //selectedElements[j] = myElem;
 
-                selectorManager.requestSelector(elem);
+                //selectorManager.requestSelector(elem);
 
                 // only the first selectedBBoxes element is ever used in the codebase these days
                 //			if (j == 0) selectedBBoxes[0] = svgedit.utilities.getBBox(elem);
@@ -1573,6 +1573,7 @@ $.SvgCanvas = function (container, config) {
                     start_x = x;
                     start_y = y;
                     var nextid = getNextId();
+                    cur_shape.fill = 'none';
                     addSvgElementFromJson({
                         element: 'rect',
                         curStyles: true,
@@ -1591,7 +1592,26 @@ $.SvgCanvas = function (container, config) {
                     start_x = x;
                     start_y = y;
                     var nextid = getNextId();
-                    var myid = 'fd_' + nextid.split('_')[1]
+                    cur_shape.fill = '#b8cff2';
+                    var myid = 'fd_' + nextid.split('_')[1];
+                   
+                    //var clipPath = svgdoc.createElementNS(NS.SVG, 'clipPath');
+                    //$(clipPath).attr({ 'id': mycpid });
+                    //var current_layer = getCurrentDrawing().getCurrentLayer();
+                    //current_layer.appendChild(clipPath);
+                    //var current_layer = getCurrentDrawing().getCurrentLayer();
+                    //var rect = svgdoc.createElementNS(NS.SVG, 'rect');
+                    //svgedit.utilities.assignAttributes(rect,{
+                    //    'x': x,
+                    //    'y': y,
+                    //    'width': 0,
+                    //    'height': 0,
+                    //    'id': myid,
+                    //    'opacity': cur_shape.opacity / 2,
+                    //    'field_name': '',
+                    //    'field_align': 'left'
+                    //});
+                    //current_layer.appendChild(rect);
                     addSvgElementFromJson({
                         element: 'rect',
                         curStyles: true,
@@ -1601,7 +1621,9 @@ $.SvgCanvas = function (container, config) {
                             width: 0,
                             height: 0,
                             id: myid,
-                            opacity: cur_shape.opacity / 2
+                            opacity: cur_shape.opacity / 2,
+                            'field_name': '',
+                            'field_align': 'left'
                         }
                     });
                     var textid = 'fdtxt_' + nextid.split('_')[1];
@@ -1616,7 +1638,7 @@ $.SvgCanvas = function (container, config) {
                             'stroke-width': cur_text.stroke_width,
                             'font-size': cur_text.font_size,
                             'font-family': cur_text.font_family,
-                            'text-anchor': 'middle',
+                            //'text-anchor': 'middle',
                             'alignment-baseline': 'middle',
                             'xml:space': 'preserve',
                             'font-weight': cur_text.font_weight,
@@ -1865,10 +1887,10 @@ $.SvgCanvas = function (container, config) {
                         var intElem = newList[i];
                         // Found an element that was not selected before, so we should add it.
                         if (selectedElements.indexOf(intElem) == -1) {
-                            
+
                             elemsToAdd.push(intElem);
 
-                         
+
                         }
                         // Found an element that was already selected, so we shouldn't remove it.
                         var foundInd = elemsToRemove.indexOf(intElem);
@@ -2292,14 +2314,28 @@ $.SvgCanvas = function (container, config) {
                                 var width = parseInt(selected.getAttribute('width')),
                                     height = parseInt(selected.getAttribute('height')),
                                     x = parseInt(selected.getAttribute('x')),
-                                    y = parseInt(selected.getAttribute('y'));
+                                    y = parseInt(selected.getAttribute('y')),
+                                    field_align = selected.getAttribute('field_align');
 
                                 var myid = 'fdtxt_' + selected.id.split('_')[1];
                                 if (width != 0) {
-
                                     var mytext = svgedit.utilities.getElem(myid);
+                                    var bbox = mytext.getBBox();
+                                    var mytxtwidth = bbox.width;
+
+                                    var fdAlign = field_align;
+                                    var myx;
+                                    if (fdAlign == 'left') {
+                                        myx = x + 2;
+                                    } else if (fdAlign == 'right') {
+                                        myx = Math.abs(x + width - 2 - mytxtwidth);
+                                    } else if (fdAlign == 'center') {
+                                        myx = Math.abs(x + (width / 2)) - Math.abs((mytxtwidth / 2));
+                                    }
+                                    
                                     svgedit.utilities.assignAttributes(mytext, {
-                                        x: (Math.abs(x + (width / 2))),
+                                        x: myx,
+                                        //x: (Math.abs(x + (width / 2))),
                                         y: (Math.abs(y + (height / 2)))
                                     });
                                 }
@@ -2365,16 +2401,30 @@ $.SvgCanvas = function (container, config) {
                     keep = (attrs.width != 0 || attrs.height != 0) || current_mode === 'image';
                     break;
                 case 'field':
-                    element = svgedit.utilities.getElem('fd_' + getId().split('_')[1]),
-                    attrs = $(element).attr(['width', 'height', 'x', 'y']);
-                    var mytxtid = 'fdtxt_' + element.id.split('_')[1];
+                    element = svgedit.utilities.getElem('fd_' + getId().split('_')[1]);
+                    attrs = $(element).attr(['width', 'height', 'x', 'y', 'field_align']);
+
                     if (attrs.width != 0) {
-                        //var mytext = document.createElementNS(NS.SVG, 'text');
+                        var mytxtid = 'fdtxt_' + element.id.split('_')[1];
                         var mytext = svgedit.utilities.getElem(mytxtid);
+                        var bbox = mytext.getBBox();
+                        var mytxtwidth = bbox.width;
+
+                        var fdAlign = attrs.field_align;
+                        var myx;
+                        if (fdAlign == 'left') {
+                            myx = attrs.x + 2;
+                        } else if (fdAlign == 'right') {
+                            myx = Math.abs(attrs.x + attrs.width - 2 - mytxtwidth);
+                        } else if (fdAlign == 'center') {
+                            myx = Math.abs(attrs.x + (attrs.width / 2)) - Math.abs((mytxtwidth / 2));
+                        }
+
                         svgedit.utilities.assignAttributes(mytext, {
                             //id: myid,
                             //class: 'textField',
-                            x: (Math.abs(attrs.x + attrs.x + attrs.width)) / 2,
+                            //x: (Math.abs(attrs.x + attrs.x + attrs.width)) / 2,
+                            x: myx,
                             y: (Math.abs(attrs.y + attrs.y + attrs.height)) / 2
                             //'alignment-baseline': 'middle',
                             //'text-anchor': 'middle',
@@ -2382,7 +2432,7 @@ $.SvgCanvas = function (container, config) {
                             //'font-size': "16"
                         });
 
-                        var textNode = document.createTextNode('test');
+                        var textNode = document.createTextNode('');
                         mytext.appendChild(textNode);
 
                         keep = (attrs.width != 0 || attrs.height != 0);
@@ -2622,28 +2672,28 @@ $.SvgCanvas = function (container, config) {
         //	$(window).mouseup(mouseUp);
 
         //TODO(rafaelcastrocouto): User preference for shift key and zoom factor
-        $(container).bind('mousewheel DOMMouseScroll', function (e) {
-            //if (!e.shiftKey) {return;}
-            e.preventDefault();
-            var evt = e.originalEvent;
+        //$(container).bind('mousewheel DOMMouseScroll', function (e) {
+        //    //if (!e.shiftKey) {return;}
+        //    e.preventDefault();
+        //    var evt = e.originalEvent;
 
-            root_sctm = $('#svgcontent g')[0].getScreenCTM().inverse();
-            var pt = svgedit.math.transformPoint(evt.pageX, evt.pageY, root_sctm);
+        //    root_sctm = $('#svgcontent g')[0].getScreenCTM().inverse();
+        //    var pt = svgedit.math.transformPoint(evt.pageX, evt.pageY, root_sctm);
 
-            var bbox = {
-                'x': pt.x,
-                'y': pt.y,
-                'width': 0,
-                'height': 0
-            };
+        //    var bbox = {
+        //        'x': pt.x,
+        //        'y': pt.y,
+        //        'width': 0,
+        //        'height': 0
+        //    };
 
-            var delta = (evt.wheelDelta) ? evt.wheelDelta : (evt.detail) ? -evt.detail : 0;
-            if (!delta) { return; }
+        //    var delta = (evt.wheelDelta) ? evt.wheelDelta : (evt.detail) ? -evt.detail : 0;
+        //    if (!delta) { return; }
 
-            bbox.factor = Math.max(3 / 4, Math.min(4 / 3, (delta)));
+        //    bbox.factor = Math.max(3 / 4, Math.min(4 / 3, (delta)));
 
-            call('zoomed', bbox);
-        });
+        //    call('zoomed', bbox);
+        //});
 
     }());
 

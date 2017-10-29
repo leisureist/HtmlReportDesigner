@@ -85,7 +85,7 @@ rptEditor.addExtension("Connector", function(S) {
 		if(!conn_rules.length) {
 			conn_rules = $('<style id="connector_rules"></style>').appendTo('head');
 		} 
-		conn_rules.text(!on?"":"#tool_clone, #tool_topath, #tool_angle, #xy_panel { display: none !important; }");
+		conn_rules.text(!on?"":"#tool_clone, #xy_panel { display: none !important; }");
 		$('#connector_panel').toggle(on);
 	}
 	

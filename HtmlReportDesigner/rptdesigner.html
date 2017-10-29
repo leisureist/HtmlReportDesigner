@@ -180,41 +180,16 @@
                     <div class="tool_sep"></div>
                     <div class="push_button" id="tool_move_top" title="Bring to Front [ Ctrl+Shift+] ]"></div>
                     <div class="push_button" id="tool_move_bottom" title="Send to Back [ Ctrl+Shift+[ ]"></div>
-                    <div class="push_button" id="tool_topath" title="Convert to Path"></div>
-                    <div class="push_button" id="tool_reorient" title="Reorient path"></div>
-                    <div class="push_button" id="tool_make_link" title="Make (hyper)link"></div>
+
                     <div class="tool_sep"></div>
                     <label id="idLabel" title="Identify the element">
                         <span>id:</span>
                         <input id="elem_id" class="attr_changer" data-attr="id" size="10" type="text" />
                     </label>
-                    <label id="classLabel" title="Element class">
-                        <span>class:</span>
-                        <input id="elem_class" class="attr_changer" data-attr="class" size="10" type="text" />
-                    </label>
-                </div>
-                <label id="tool_angle" title="Change rotation angle" class="toolset">
-                    <span id="angleLabel" class="icon_label"></span>
-                    <input id="angle" size="2" value="0" type="text" />
-                </label>
-
-                <div class="toolset" id="tool_blur" title="Change gaussian blur value">
-                    <label>
-                        <span id="blurLabel" class="icon_label"></span>
-                        <input id="blur" size="2" value="0" type="text" />
-                    </label>
-                    <div id="blur_dropdown" class="dropdown">
-                        <button></button>
-                        <ul>
-                            <li class="special"><div id="blur_slider"></div></li>
-                        </ul>
-                    </div>
                 </div>
 
-                <div class="dropdown toolset" id="tool_position" title="Align Element to Page">
-                    <div id="cur_position" class="icon_label"></div>
-                    <button></button>
-                </div>
+
+
                 <div id="xy_panel" class="toolset">
                     <label>
                         x: <input id="selected_x" class="attr_changer" title="Change X coordinate" size="3" data-attr="x" />
@@ -226,30 +201,7 @@
             </div>
 
             <!-- Buttons when multiple elements are selected -->
-            <div id="multiselected_panel">
-                <div class="tool_sep"></div>
-                <div class="push_button" id="tool_clone_multi" title="Clone Elements [C]"></div>
-                <div class="push_button" id="tool_delete_multi" title="Delete Selected Elements [Delete/Backspace]"></div>
-                <div class="tool_sep"></div>
-                <div class="push_button" id="tool_group_elements" title="Group Elements [G]"></div>
-                <div class="push_button" id="tool_make_link_multi" title="Make (hyper)link"></div>
-                <div class="push_button" id="tool_alignleft" title="Align Left"></div>
-                <div class="push_button" id="tool_aligncenter" title="Align Center"></div>
-                <div class="push_button" id="tool_alignright" title="Align Right"></div>
-                <div class="push_button" id="tool_aligntop" title="Align Top"></div>
-                <div class="push_button" id="tool_alignmiddle" title="Align Middle"></div>
-                <div class="push_button" id="tool_alignbottom" title="Align Bottom"></div>
-                <label id="tool_align_relative">
-                    <span id="relativeToLabel">relative to:</span>
-                    <select id="align_relative_to" title="Align relative to ...">
-                        <option id="selected_objects" value="selected">selected objects</option>
-                        <option id="largest_object" value="largest">largest object</option>
-                        <option id="smallest_object" value="smallest">smallest object</option>
-                        <option id="page" value="page">page</option>
-                    </select>
-                </label>
-                <div class="tool_sep"></div>
-            </div>
+
             <div id="rect_panel">
                 <div class="toolset">
                     <label id="rect_width_tool" title="Change rectangle width">
@@ -261,10 +213,23 @@
                         <input id="rect_height" class="attr_changer" size="3" data-attr="height" />
                     </label>
                 </div>
-                <label id="cornerRadiusLabel" title="Change Rectangle Corner Radius" class="toolset">
-                    <span class="icon_label"></span>
-                    <input id="rect_rx" size="3" value="0" type="text" data-attr="Corner Radius" />
-                </label>
+
+            </div>
+            <div id="field_panel">
+                <div class="toolset">
+                    <label id="filed_name_tool" title="Define Field Name">
+                        <span id="fNameLabel">欄位名稱:</span>
+                        <input id="field_name" class="attr_changer" size="15" data-attr="FieldName" />
+                    </label>
+                    <label id="filed_align_tool" title="Text Align">
+                        <span id="fAlignLabel">位置:</span>
+                        <select id="field_align_dropdown" title="Value Align" style="width:60px">
+                            <option id="field_align_left" selected="selected" value="left">靠左</option>
+                            <option id="field_align_center" value="center">置中</option>
+                            <option id="field_align_right" value="right">靠右</option>
+                        </select>
+                    </label>
+                </div>
             </div>
             <div id="image_panel">
                 <div class="toolset">
@@ -378,9 +343,9 @@
             <div class="tool_button" id="tool_field" title="Field"></div>
             <div class="tool_button" id="tool_text" title="Text Tool"></div>
             <div class="tool_button" id="tool_image" title="Image Tool"></div>
-            
 
-           
+
+
         </div> <!-- tools_left -->
         <div id="tools_bottom" class="tools_panel">
             <!-- Zoom buttons -->

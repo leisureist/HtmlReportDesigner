@@ -77,12 +77,8 @@ rptEditor.readLang({
 		"fit_to_canvas": "適合畫布",
 		"fit_to_layer_content": "適合圖層內容",
 		"fit_to_sel": "適合選取的物件",
-		"align_relative_to": "相對對齊 ...",
+		
 		"relativeTo": "相對於:",
-		"page": "網頁",
-		"largest_object": "最大的物件",
-		"selected_objects": "選取物件",
-		"smallest_object": "最小的物件",
 		"new_doc": "清空圖像",
 		"open_doc": "打開圖像",
 		"export_img": "Export",
@@ -247,5 +243,8 @@ rptEditor.readLang({
 		storageNoPrefs: "Do not store my preferences locally",
 		rememberLabel: "Remember this choice?",
 		rememberTooltip: "If you choose to opt out of storage while remembering this choice, the URL will change so as to avoid asking again."
-	}
+    },
+    field: {
+        "fieldName": "欄位名稱"
+    }
 });

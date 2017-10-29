@@ -666,29 +666,26 @@ TODOS
                     '#tool_image': 'image',
 
 
-                    '#tool_clone,#tool_clone_multi': 'clone',
+                    '#tool_clone': 'clone',
                     '#tool_node_clone': 'node_clone',
-                    '#layer_delete,#tool_delete,#tool_delete_multi': 'delete',
+                    '#layer_delete,#tool_delete': 'delete',
                     '#tool_node_delete': 'node_delete',
                     '#tool_add_subpath': 'add_subpath',
                     '#tool_openclose_path': 'open_path',
                     '#tool_move_top': 'move_top',
                     '#tool_move_bottom': 'move_bottom',
-                    '#tool_topath': 'to_path',
                     '#tool_node_link': 'link_controls',
-                    '#tool_reorient': 'reorient',
-                    '#tool_group_elements': 'group_elements',
+                   
                     '#tool_ungroup': 'ungroup',
                     '#tool_unlink_use': 'unlink_use',
 
-                    '#tool_alignleft, #tool_posleft': 'align_left',
-                    '#tool_aligncenter, #tool_poscenter': 'align_center',
-                    '#tool_alignright, #tool_posright': 'align_right',
-                    '#tool_aligntop, #tool_postop': 'align_top',
-                    '#tool_alignmiddle, #tool_posmiddle': 'align_middle',
-                    '#tool_alignbottom, #tool_posbottom': 'align_bottom',
-                    '#cur_position': 'align',
-
+                    '#tool_posleft': 'align_left',
+                    '#tool_poscenter': 'align_center',
+                    '#tool_posright': 'align_right',
+                    '#tool_postop': 'align_top',
+                    '#tool_posmiddle': 'align_middle',
+                    '#tool_posbottom': 'align_bottom',
+                  
                     '#linecap_butt,#cur_linecap': 'linecap_butt',
                     '#linecap_round': 'linecap_round',
                     '#linecap_square': 'linecap_square',
@@ -709,14 +706,13 @@ TODOS
 
                     '#rwidthLabel, #iwidthLabel': 'width',
                     '#rheightLabel, #iheightLabel': 'height',
-                    '#cornerRadiusLabel span': 'c_radius',
-                    '#angleLabel': 'angle',
-                    '#linkLabel,#tool_make_link,#tool_make_link_multi': 'globe_link',
+                   
+                    '#linkLabel,#tool_make_link_multi': 'globe_link',
                     '#zoomLabel': 'zoom',
                     '#tool_fill label': 'fill',
                     '#tool_stroke .icon_label': 'stroke',
                     '#group_opacityLabel': 'opacity',
-                    '#blurLabel': 'blur',
+                 
                     '#font_sizeLabel': 'fontsize',
 
                     '.flyout_arrow_horiz': 'arrow_right',
@@ -1524,7 +1520,7 @@ TODOS
                     $('#group_opacity').val(opac_perc);
                     $('#opac_slider').slider('option', 'value', opac_perc);
                     $('#elem_id').val(selectedElement.id);
-                    $('#elem_class').val(selectedElement.getAttribute("class"));
+                    
                 }
 
                 updateToolButtonState();
@@ -1541,9 +1537,9 @@ TODOS
 
                 var is_node = currentMode == 'pathedit'; //elem ? (elem.id && elem.id.indexOf('pathpointgrip') == 0) : false;
                 var menu_items = $('#cmenu_canvas li');
-                $('#selected_panel, #multiselected_panel, #g_panel, #rect_panel, #circle_panel,' +
+                $('#selected_panel, #g_panel, #rect_panel, #circle_panel,' +
                     '#ellipse_panel, #line_panel, #text_panel, #image_panel, #container_panel,' +
-                    ' #use_panel, #a_panel').hide();
+                    ' #use_panel, #a_panel, #field_panel').hide();
                 if (elem != null) {
                     var elname = elem.nodeName;
                     // If this is a link with no transform and one child, pretend
@@ -1552,13 +1548,7 @@ TODOS
                     //						elem = elem.firstChild;
                     //					}
 
-                    var angle = svgCanvas.getRotationAngle(elem);
-                    $('#angle').val(angle);
-
-                    var blurval = svgCanvas.getBlur(elem);
-                    $('#blur').val(blurval);
-                    $('#blur_slider').slider('option', 'value', blurval);
-
+                 
                     if (svgCanvas.addedNew) {
                         if (elname === 'image') {
                             // Prompt for URL if not a data URL
@@ -1576,7 +1566,7 @@ TODOS
                         if (['line', 'circle', 'ellipse'].indexOf(elname) >= 0) {
                             $('#xy_panel').hide();
                         } else {
-                            var x, y;
+                            var x, y, field_name, field_align;
 
                             // Get BBox vals for g, polyline and path
                             if (['g', 'polyline', 'path'].indexOf(elname) >= 0) {
@@ -1588,6 +1578,8 @@ TODOS
                             } else {
                                 x = elem.getAttribute('x');
                                 y = elem.getAttribute('y');
+                                field_name = elem.getAttribute('field_name');
+                                field_align = elem.getAttribute('field_align');
                             }
 
                             if (unit) {
@@ -1597,14 +1589,14 @@ TODOS
 
                             $('#selected_x').val(x || 0);
                             $('#selected_y').val(y || 0);
+                            $('#field_name').val(field_name || '');
+                            $('#field_align_dropdown').val(field_align || '');
                             $('#xy_panel').show();
                         }
 
                         // Elements in this array cannot be converted to a path
                         var no_path = ['image', 'text', 'path', 'g', 'use'].indexOf(elname) == -1;
-                        $('#tool_topath').toggle(no_path);
-                        $('#tool_reorient').toggle(elname === 'path');
-                        $('#tool_reorient').toggleClass('disabled', angle === 0);
+                      
                     } else {
                         var point = path.getNodePoint();
                         $('#tool_add_subpath').removeClass('push_button_pressed').addClass('tool_button');
@@ -1663,8 +1655,7 @@ TODOS
                     }
 
                     // Hide/show the make_link buttons
-                    $('#tool_make_link, #tool_make_link').toggle(!link_href);
-
+                
                     if (link_href) {
                         $('#link_url').val(link_href);
                     }
@@ -1719,13 +1710,14 @@ TODOS
                     }
                     menu_items[(el_name === 'g' ? 'en' : 'dis') + 'ableContextMenuItems']('#ungroup');
                     menu_items[((el_name === 'g' || !multiselected) ? 'dis' : 'en') + 'ableContextMenuItems']('#group');
+
+
+                    if (elem.id.indexOf('fd_') != -1) {
+                        $('#field_panel').show();
+                    }
+
                 } // if (elem != null)
-                else if (multiselected) {
-                    $('#multiselected_panel').show();
-                    menu_items
-                        .enableContextMenuItems('#group')
-                        .disableContextMenuItems('#ungroup');
-                } else {
+                else {
                     menu_items.disableContextMenuItems('#delete,#cut,#copy,#group,#ungroup,#move_front,#move_up,#move_down,#move_back');
                 }
 
@@ -1807,20 +1799,7 @@ TODOS
 
                 multiselected = (elems.length >= 2 && elems[1] != null);
                 // Only updating fields for single elements for now
-                if (!multiselected) {
-                    switch (mode) {
-                        case 'rotate':
-                            var ang = svgCanvas.getRotationAngle(elem);
-                            $('#angle').val(ang);
-                            $('#tool_reorient').toggleClass('disabled', ang === 0);
-                            break;
-
-                        // TODO: Update values that change on move/resize, etc
-                        //						case "select":
-                        //						case "resize":
-                        //							break;
-                    }
-                }
+               
                 svgCanvas.runExtensions('elementTransition', {
                     elems: elems
                 });
@@ -2168,7 +2147,7 @@ TODOS
 
                 //				var elems = $('.tool_button, .push_button, .tool_button_current, .disabled, .icon_label, #url_notice, #tool_open');
                 var sel_toscale = '#tools_top .toolset, #editor_panel > *, #history_panel > *,' +
-                    '				#main_button, #tools_left > *, #path_node_panel > *, #multiselected_panel > *,' +
+                    '				#main_button, #tools_left > *, #path_node_panel > *,' +
                     '				#g_panel > *, #tool_font_size > *, .tools_flyout';
 
                 var elems = $(sel_toscale);
@@ -2887,11 +2866,6 @@ TODOS
                 svgCanvas.setStrokeWidth(val);
             };
 
-            var changeRotationAngle = function (ctl) {
-                svgCanvas.setRotationAngle(ctl.value);
-                $('#tool_reorient').toggleClass('disabled', parseInt(ctl.value, 10) === 0);
-            };
-
             var changeOpacity = function (ctl, val) {
                 if (val == null) { val = ctl.value; }
                 $('#group_opacity').val(val);
@@ -2899,21 +2873,6 @@ TODOS
                     $('#opac_slider').slider('option', 'value', val);
                 }
                 svgCanvas.setOpacity(val / 100);
-            };
-
-            var changeBlur = function (ctl, val, noUndo) {
-                if (val == null) { val = ctl.value; }
-                $('#blur').val(val);
-                var complete = false;
-                if (!ctl || !ctl.handle) {
-                    $('#blur_slider').slider('option', 'value', val);
-                    complete = true;
-                }
-                if (noUndo) {
-                    svgCanvas.setBlurNoUndo(val);
-                } else {
-                    svgCanvas.setBlur(val, complete);
-                }
             };
 
             $('#stroke_style').change(function () {
@@ -2988,7 +2947,7 @@ TODOS
                     this.value = selectedElement.getAttribute(attr);
                     return false;
                 }
-
+               
                 if (attr !== 'id' && attr !== 'class') {
                     if (isNaN(val)) {
                         val = svgCanvas.convertToNum(attr, val);
@@ -3010,7 +2969,48 @@ TODOS
                     svgCanvas.clearSelection();
                     elem.id = val;
                     svgCanvas.addToSelection([elem], true);
-                } else {
+                } else if (attr == 'FieldName') {
+
+                    if (selectedElement == null) return;
+
+                    var myVal = this.value;
+
+                    var elemid = selectedElement.id;
+                    var elem = $('#' + elemid);
+                    var elemwidth = parseInt(elem.attr('width'));
+                    var elemx = parseInt(elem.attr('x'));
+
+                    elem.attr('field_name', myVal);
+
+                    var txtid = 'fdtxt_' + elemid.split('_')[1];
+                    var textElement = svgedit.utilities.getElem(txtid);
+                    var bbox = textElement.getBBox();
+                    var mytxtwidth = bbox.width;
+
+                    var fdAlign = elem.attr('field_align');
+                    var myx;
+                    if (fdAlign == 'left') {
+                        myx = elemx + 2;
+                    } else if (fdAlign == 'right') {
+                        myx = Math.abs(elemx + elemwidth - 2 - mytxtwidth);
+                    } else if (fdAlign == 'center') {
+                        myx = Math.abs(elemx + (elemwidth / 2)) - Math.abs((mytxtwidth / 2));
+                    }
+
+                    $('#' + txtid).attr('x', myx);
+
+                    $('#' + txtid).html(myVal);
+                  
+                    if (textElement.getSubStringLength(0, myVal.length) >= elemwidth - 3) {
+                        for (var x = myVal.length - 1; x > 0; x -= 1) {
+                            if (textElement.getSubStringLength(0, x) <= elemwidth - 3) {
+                                textElement.textContent = myVal.substring(0, x);
+                                return;
+                            }
+                        }
+                    }
+                }
+                else {
                     svgCanvas.changeSelectedAttribute(attr, val);
                 }
                 this.blur();
@@ -3244,26 +3244,10 @@ TODOS
                 }
             });
 
-            editor.addDropDown('#blur_dropdown', $.noop);
-
+           
             var slideStart = false;
 
-            $('#blur_slider').slider({
-                max: 10,
-                step: 0.1,
-                stop: function (evt, ui) {
-                    slideStart = false;
-                    changeBlur(ui);
-                    $('#blur_dropdown li').show();
-                    $(window).mouseup();
-                },
-                start: function () {
-                    slideStart = true;
-                },
-                slide: function (evt, ui) {
-                    changeBlur(ui, null, slideStart);
-                }
-            });
+           
 
             editor.addDropDown('#zoom_dropdown', function () {
                 var item = $(this);
@@ -3283,11 +3267,7 @@ TODOS
                 setStrokeOpt(this, true);
             }, { dropUp: true });
 
-            addAltDropDown('#tool_position', '#position_opts', function () {
-                var letter = this.id.replace('tool_pos', '').charAt(0);
-                svgCanvas.alignSelectedElements(letter, 'page');
-            }, { multiclick: true });
-
+            
 			/*
 
 			When a flyout icon is selected
@@ -3486,13 +3466,7 @@ TODOS
                 svgCanvas.cycleElement(0);
             };
 
-            var rotateSelected = function (cw, step) {
-                if (selectedElement == null || multiselected) { return; }
-                if (!cw) { step *= -1; }
-                var angle = parseFloat($('#angle').val()) + step;
-                svgCanvas.setRotationAngle(angle);
-                updateContextPanel();
-            };
+           
 
             var clickClear = function () {
                 var dims = curConfig.dimensions;
@@ -4089,13 +4063,7 @@ TODOS
             supportsNonSS = (testEl.style.vectorEffect === 'non-scaling-stroke');
             testEl.removeAttribute('style');
             var svgdocbox = paintBox.fill.rect.ownerDocument;
-            // Use this to test support for blur element. Seems to work to test support in Webkit
-            var blurTest = svgdocbox.createElementNS(svgedit.NS.SVG, 'feGaussianBlur');
-            if (blurTest.stdDeviationX === undefined) {
-                $('#tool_blur').hide();
-            }
-            $(blurTest).remove();
-
+           
             // Test for zoom icon support
             (function () {
                 var pre = '-' + uaPrefix.toLowerCase() + '-zoom-';
@@ -4398,6 +4366,30 @@ TODOS
                 }
             });
 
+            $('#field_align_dropdown').change(function () {
+                var elemid = selectedElement.id;
+                var txtid = 'fdtxt_' + elemid.split('_')[1];
+                var textElement = svgedit.utilities.getElem(txtid);
+                var bbox = textElement.getBBox();
+                var mytxtwidth = bbox.width;
+               
+                var elem = $('#' + elemid);
+                var elemx = parseInt(elem.attr('x'));
+                var elemwidth = parseInt(elem.attr('width'));
+                var fdAlign = $(this).val();
+                var myx;
+                if (fdAlign == 'left') {
+                    myx = elemx + 2;
+                } else if (fdAlign == 'right') {
+                    myx = Math.abs(elemx + elemwidth - 2 - mytxtwidth);
+                } else if (fdAlign == 'center') {
+                    myx = Math.abs(elemx + (elemwidth / 2)) - Math.abs((mytxtwidth / 2));
+                }
+
+                $('#' + txtid).attr('x', myx);
+                elem.attr('field_align', fdAlign);
+            });
+
             //Prevent browser from erroneously repopulating fields
             $('input,select').attr('autocomplete', 'off');
 
@@ -4439,8 +4431,8 @@ TODOS
                     { sel: '#tool_docprops', fn: showDocProperties, evt: 'mouseup' },
                     { sel: '#tool_prefs_save', fn: savePreferences, evt: 'click' },
                     { sel: '#tool_prefs_option', fn: function () { showPreferences(); return false; }, evt: 'mouseup' },
-                    { sel: '#tool_delete,#tool_delete_multi', fn: deleteSelected, evt: 'click', key: ['del/backspace', true] },
-                    { sel: '#tool_reorient', fn: reorientPath, evt: 'click' },
+                    { sel: '#tool_delete', fn: deleteSelected, evt: 'click', key: ['del/backspace', true] },
+                   
                     { sel: '#tool_node_link', fn: linkControlPoints, evt: 'click' },
                     { sel: '#tool_node_clone', fn: clonePathNode, evt: 'click' },
                     { sel: '#tool_node_delete', fn: deletePathNode, evt: 'click' },
@@ -4448,12 +4440,12 @@ TODOS
                     { sel: '#tool_add_subpath', fn: addSubPath, evt: 'click' },
                     { sel: '#tool_move_top', fn: moveToTopSelected, evt: 'click', key: 'ctrl+shift+]' },
                     { sel: '#tool_move_bottom', fn: moveToBottomSelected, evt: 'click', key: 'ctrl+shift+[' },
-                    { sel: '#tool_topath', fn: convertToPath, evt: 'click' },
-                    { sel: '#tool_make_link,#tool_make_link_multi', fn: makeHyperlink, evt: 'click' },
+                    
+                 
                     { sel: '#tool_undo', fn: clickUndo, evt: 'click', key: ['Z', true] },
                     { sel: '#tool_redo', fn: clickRedo, evt: 'click', key: ['Y', true] },
-                    { sel: '#tool_clone,#tool_clone_multi', fn: clickClone, evt: 'click', key: ['D', true] },
-                    { sel: '#tool_group_elements', fn: clickGroup, evt: 'click', key: ['G', true] },
+                    { sel: '#tool_clone', fn: clickClone, evt: 'click', key: ['D', true] },
+                  
                     { sel: '#tool_ungroup', fn: clickGroup, evt: 'click' },
                     { sel: '#tool_unlink_use', fn: clickGroup, evt: 'click' },
                     { sel: '[id^=tool_align]', fn: clickAlign, evt: 'click' },
@@ -4692,12 +4684,12 @@ TODOS
             });
 
             // init SpinButtons
-            $('#rect_rx').SpinButton({ min: 0, max: 1000, callback: changeRectRadius });
+           
             $('#stroke_width').SpinButton({ min: 0, max: 99, smallStep: 0.1, callback: changeStrokeWidth });
-            $('#angle').SpinButton({ min: -180, max: 180, step: 5, callback: changeRotationAngle });
+           
             $('#font_size').SpinButton({ min: 0.001, stepfunc: stepFontSize, callback: changeFontSize });
             $('#group_opacity').SpinButton({ min: 0, max: 100, step: 5, callback: changeOpacity });
-            $('#blur').SpinButton({ min: 0, max: 10, step: 0.1, callback: changeBlur });
+          
             $('#zoom').SpinButton({ min: 0.001, max: 10000, step: 50, stepfunc: stepZoom, callback: changeZoom })
                 // Set default zoom
                 .val(svgCanvas.getZoom() * 100);
@@ -4999,11 +4991,6 @@ TODOS
 
                 $.each(elems, function (source, dest) {
                     $(dest).attr('title', $(source)[0].title);
-                });
-
-                // Copy alignment titles
-                $('#multiselected_panel div[id^=tool_align]').each(function () {
-                    $('#tool_pos' + this.id.substr(10))[0].title = this.title;
                 });
             };
         };

@@ -65,13 +65,14 @@ var rptEditor = (function($, editor) {'use strict';
 		// Old locale file, do nothing for now.
 		if (!langData.tools) {return;}
 
-		var tools = langData.tools,
-			misc = langData.misc,
-			properties = langData.properties,
-			config = langData.config,
-			layers = langData.layers,
-			common = langData.common,
-			ui = langData.ui;
+        var tools = langData.tools,
+            misc = langData.misc,
+            properties = langData.properties,
+            config = langData.config,
+            layers = langData.layers,
+            common = langData.common,
+            ui = langData.ui,
+            field = langData.field;
 		
 		setStrings('content', {
 			// copyrightLabel: misc.powered_by, // Currently commented out in svg-editor.html
@@ -90,16 +91,16 @@ var rptEditor = (function($, editor) {'use strict';
 			image_opt_ref: config.image_opt_ref,
 			includedImages: config.included_images,
 			
-			largest_object: tools.largest_object,
+		
 			
 			layersLabel: layers.layers,
-			page: tools.page,
-			relativeToLabel: tools.relativeTo,
+			
+			
 			selLayerLabel: layers.move_elems_to,
 			selectedPredefined: config.select_predefined,
 			
-			selected_objects: tools.selected_objects,
-			smallest_object: tools.smallest_object,
+		
+		
 			straight_segments: properties.straight_segments,
 			
 			svginfo_bg_url: config.editor_img_url + ":",
@@ -169,10 +170,7 @@ var rptEditor = (function($, editor) {'use strict';
 		setStrings('content', opts);
 		
 		setStrings('title', {
-			align_relative_to: tools.align_relative_to,
 			
-			
-			cornerRadiusLabel: properties.corner_radius,
 			
 			fill_color: properties.fill_color,
 			font_family: properties.font_family,
@@ -201,7 +199,8 @@ var rptEditor = (function($, editor) {'use strict';
 			path_node_x: properties.node_x,
 			path_node_y: properties.node_y,
 			rect_height_tool: properties.rect_height,
-			rect_width_tool: properties.rect_width,
+            rect_width_tool: properties.rect_width,
+            filed_name_tool: field.fieldName,
 			seg_type: properties.seg_type,
 			selLayerNames: layers.move_selected,
 			selected_x: properties.pos_x,
@@ -213,26 +212,19 @@ var rptEditor = (function($, editor) {'use strict';
 			text: properties.text_contents,
 			toggle_stroke_tools: ui.toggle_stroke_tools,
 			tool_add_subpath: tools.add_subpath,
-			tool_alignbottom: tools.align_bottom,
-			tool_aligncenter: tools.align_center,
-			tool_alignleft: tools.align_left,
-			tool_alignmiddle: tools.align_middle,
-			tool_alignright: tools.align_right,
-			tool_aligntop: tools.align_top,
-			tool_angle: properties.angle,
-			tool_blur: properties.blur,
+			
+			
+		
 			tool_bold: properties.bold,
 			
 			tool_clone: tools.clone,
-			tool_clone_multi: tools.clone,
+		
 			tool_delete: tools.del,
-			tool_delete_multi: tools.del,
 			
 		
 			
 			tool_font_size: properties.font_size,
-			tool_group_elements: tools.group_elements,
-			tool_make_link: tools.make_link,
+		
 			tool_link_url: tools.set_link_url,
 			tool_image: tools.mode_image,
 			tool_italic: properties.italic,
@@ -245,24 +237,22 @@ var rptEditor = (function($, editor) {'use strict';
 			tool_opacity: properties.opacity,
 			tool_openclose_path: tools.openclose_path,
 			
-			tool_position: tools.align_to_page,
+		
             tool_rect: tools.mode_rect,
             tool_field: tools.mode_field,
 			tool_redo: tools.redo,
-			tool_reorient: tools.reorient_path,
+			
 			tool_select: tools.mode_select,
 			tool_source: tools.source_save,
 			tool_square: tools.mode_square,
 			tool_text: tools.mode_text,
-			tool_topath: tools.to_path,
 			tool_undo: tools.undo,
 			tool_ungroup: tools.ungroup,
 			tool_wireframe: tools.wireframe_mode,
 			view_grid: tools.toggle_grid,
 			url_notice: tools.no_embed
 
-		}, true);
-		
+        }, true);
 		editor.setLang(lang_param, langData);
 	};
 
