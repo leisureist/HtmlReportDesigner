@@ -1118,7 +1118,12 @@ $.SvgCanvas = function (container, config) {
         call('selected', selectedElements);
 
         if (showGrips || selectedElements.length == 1) {
-            selectorManager.requestSelector(selectedElements[0]).showGrips(true);
+            if (selectedElements[0].id.indexOf('fd') != -1) {
+                selectorManager.requestSelector(selectedElements[0]).showGrips(false);
+                //selectorManager.requestSelector(selectedElements[1]).showGrips(false);
+            }
+            else
+                selectorManager.requestSelector(selectedElements[0]).showGrips(true);
         }
         else {
             selectorManager.requestSelector(selectedElements[0]).showGrips(false);
@@ -1810,7 +1815,8 @@ $.SvgCanvas = function (container, config) {
                             if (selectedElements.length == 1) {
                                 if (selectedElements[0].id.indexOf('fd_') != -1) {
                                     selectedElements[1] = svgedit.utilities.getElem('fdtxt_' + selectedElements[0].id.split('_')[1]);
-                                } else if (selectedElements[0].id.indexOf('fdtxt_') != -1) return;
+                                    selectorManager.requestSelector(selectedElements[1]).showGrips(false);
+                                } //else if (selectedElements[0].id.indexOf('fdtxt_') != -1) return;
                             }
                             else {
                                 var j = selectedElements.length;
@@ -1821,6 +1827,7 @@ $.SvgCanvas = function (container, config) {
                                         seq = selectedElements[i].id.split('_')[1];
                                         if (selectedElements.indexOf("fdtxt_" + seq) == -1) {
                                             selectedElements[j] = svgedit.utilities.getElem('fdtxt_' + seq);
+                                            
                                             j++;
                                         }
                                     }
@@ -2274,6 +2281,7 @@ $.SvgCanvas = function (container, config) {
                                 cur_text.font_size = selected.getAttribute('font-size');
                                 cur_text.font_family = selected.getAttribute('font-family');
                             }
+
                             selectorManager.requestSelector(selected).showGrips(true);
 
                             // This shouldn't be necessary as it was done on mouseDown...
